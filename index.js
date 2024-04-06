@@ -1,6 +1,11 @@
-var finalWords = []
+//global variables
+var finalWords = [];
+var wordLines = [];
+
 var commentIsActive = false;
 var singleCommentTrigger = false;
+
+var lineIndex = 0;
 
 
 const checkForSpaces = (singleWord) =>{
@@ -13,13 +18,12 @@ const splitLine = (multiWord) => {
     const labels = helpers.labels;
     const restrictions = helpers.restrictions;
 
-    let lineIndex = 0;
-
     let left = 0
     let right = 1
+    lineIndex++;
+
 
     while (true) {
-
         if (left <= multiWord.length && right <= multiWord.length) {
 
             if (multiWord.includes("<#") && !multiWord.includes("#>")) { //starts but doesn't end on the same line
@@ -41,7 +45,6 @@ const splitLine = (multiWord) => {
             if (multiWord.includes("#") && !commentIsActive && !multiWord.includes("#>") && !multiWord.includes("<#")){
                 commentIsActive = true; 
                 singleCommentTrigger = true;
-                
                 break;
             }
 
@@ -65,7 +68,7 @@ const splitLine = (multiWord) => {
                             //word found, stores in splitWords array
 
                             substring = multiWord.substring(left, right + 1);
-                            checkForSpaces(substring) && finalWords.push(substring);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
                             left = right + 1;
                             right += 1;
@@ -75,7 +78,7 @@ const splitLine = (multiWord) => {
                             //not borders found but space cases
                             if (multiWord[right] === " ") {
                                 substring = multiWord.substring(left, right);
-                                checkForSpaces(substring) && finalWords.push(substring);
+                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
                                 left = right + 1;
                                 right += 1;
@@ -97,7 +100,7 @@ const splitLine = (multiWord) => {
 
                                 //pushes word and border
                             substring = multiWord.substring(left, left + 1);
-                            checkForSpaces(substring) && finalWords.push(substring);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
                             left += 1;
                         }
@@ -106,7 +109,7 @@ const splitLine = (multiWord) => {
 
                                 //pushes word and border
                             substring = multiWord.substring(left, right);
-                            checkForSpaces(substring) && finalWords.push(substring);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
                             left = right;
                             right += 1;
@@ -114,10 +117,10 @@ const splitLine = (multiWord) => {
                         else if (restrictions.includes(multiWord[left]) === true && restrictions.includes(multiWord[right]) === true) {
 
                             substring = multiWord.substring(left, right);
-                            checkForSpaces(substring) && finalWords.push(substring);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
                             substring = multiWord.substring(left + 1, right + 1);
-                            checkForSpaces(substring) && finalWords.push(substring);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
 
                             left = right + 1;
@@ -129,11 +132,9 @@ const splitLine = (multiWord) => {
                 }
                 else {
                     //classify line as comment
-                    lineIndex++;
                     break;
                 }
 
-                lineIndex++;
             
         }
         else {
@@ -145,8 +146,7 @@ const splitLine = (multiWord) => {
 }
 
 
-
-const readFile = (fileName) => {
+const splitFileContent = (fileName) => {
     let fs = require('fs');
     const fullContent = fs.readFileSync(fileName, 'utf-8');
 
@@ -158,7 +158,10 @@ const readFile = (fileName) => {
     });
 
     console.log(finalWords);
+    console.log(wordLines);
 
 }
 
-readFile("binary.falak");
+
+
+splitFileContent("binary.falak");
