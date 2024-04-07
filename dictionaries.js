@@ -62,5 +62,5 @@ module.exports.fileNames = [
     "literals.falak",
     "vars.falak",
     "operator.falak",
-    "break.falak"
+    "breaks.falak"
 ]

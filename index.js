@@ -243,7 +243,7 @@ const printData = () => {
 
 const main = () => {
 
-    splitFileContent(fileNames[1]);
+    splitFileContent(fileNames[9]);
     const SIZE = finalWords.length;
 
     tokenization(SIZE);
