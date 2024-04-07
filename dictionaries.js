@@ -18,7 +18,7 @@ module.exports.labels = {
     "]": "CL-SQBRACKETS",
     "{": "OP-CRLBRACKETS",
     "}": "CL-CRLBRACKETS",
-    '"': "QUOTATION",
+    "\'": "SINGLE-QUOTE",
     ";": "SEMICOLON",
     "\n": "NEWLINE",
     "\\": "BACKSLASH",
@@ -33,7 +33,7 @@ module.exports.labels = {
     ">=": "OP-COMP-GREATER",
     "!=": "OP-COMP-DIFF",
     "=": "ASSIGN",
-    "prints": "KW-PRINT",
+    "prints": "KW-PRINTS",
     "true": "LIT-BOOL",
     "false": "LIT-BOOL"
 };
