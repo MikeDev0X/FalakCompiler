@@ -51,3 +51,16 @@ module.exports.restrictions = [
     "\n",
     "."
 ]
+
+module.exports.fileNames = [
+    "hello.falak",
+    "binary.falak",
+    "palindrome.falak",
+    "factorial.falak",
+    "arrays.falak",
+    "next_day.falak",
+    "literals.falak",
+    "vars.falak",
+    "operator.falak",
+    "break.falak"
+]

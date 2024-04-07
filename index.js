@@ -12,11 +12,13 @@ var lineIndex = 0;
 const helpers = require('./dictionaries')
 const labels = helpers.labels;
 const restrictions = helpers.restrictions;
+const fileNames = helpers.fileNames;
+
+
 
 const checkForSpaces = (singleWord) => {
     return (singleWord !== "" && singleWord !== " ");
 }
-
 
 const splitLine = (multiWord) => {
 
@@ -148,22 +150,6 @@ const splitLine = (multiWord) => {
 }
 
 
-const splitFileContent = (fileName) => {
-    let fs = require('fs');
-    const fullContent = fs.readFileSync(fileName, 'utf-8');
-
-    fullContent.split(/\r?\n/).forEach(line => {
-        const currLine = line;
-
-        splitLine(currLine);
-
-    });
-
-    console.log(finalWords);
-    console.log(wordLines);
-
-}
-
 const tokenization = (size) => {
     let currentState = "";
 
@@ -172,10 +158,10 @@ const tokenization = (size) => {
         if (labels[finalWords[x]] !== undefined) {
             labeledWords.push(labels[finalWords[x]]);
 
-            if(labels[finalWords[x]] === "DOUBLE-QUOTE" && currentState === ""){
+            if (labels[finalWords[x]] === "DOUBLE-QUOTE" && currentState === "") {
                 currentState = "string";
-            } 
-            else if (labels[finalWords[x]] === "DOUBLE-QUOTE" && currentState === "string"){
+            }
+            else if (labels[finalWords[x]] === "DOUBLE-QUOTE" && currentState === "string") {
                 currentState = "";
             }
 
@@ -200,12 +186,12 @@ const tokenization = (size) => {
             }
 
 
-            if (isNaN(parseInt(finalWords[x])) && currentState === ""){
+            if (isNaN(parseInt(finalWords[x])) && currentState === "") {
                 //not a string, not a chart and not an integer -> identifier case
                 labeledWords.push("IDENTIFIER");
                 continue;
             }
-            else if (!isNaN(parseInt(finalWords[x])) && currentState === ""){
+            else if (!isNaN(parseInt(finalWords[x])) && currentState === "") {
                 //integer case
                 labeledWords.push("LIT-INT");
                 continue;
@@ -218,13 +204,50 @@ const tokenization = (size) => {
 
 }
 
+const splitFileContent = (fileName) => {
+    let fs = require('fs');
+    const fullContent = fs.readFileSync(`./falak-files/${fileName}`, 'utf-8');
+
+    fullContent.split(/\r?\n/).forEach(line => {
+        const currLine = line;
+
+        splitLine(currLine);
+
+    });
+
+}
+
+const printData = () => {
+
+    console.log("┌───────┬────────────────────┬───────────────────┐");
+    console.log("│ LINE  │  WORD              │   TOKEN           │ ");
+    console.log("├───────┴────────────────────┴───────────────────┤");
+
+    let deltaLine = 0;
+    let deltaWord = 0;
+    let deltaToken = 0;
+
+    for (let p = 0; p < finalWords.length; p++) {
+        deltaLine = 4 - wordLines[p].toString().length;
+        deltaWord = 14 - finalWords[p].length;
+        deltaToken = 16 - labeledWords[p].length;
+
+        console.log("│   " + wordLines[p] + " ".repeat(deltaLine) + "│      " + finalWords[p] + " ".repeat(deltaWord) + "│   " + labeledWords[p] + " ".repeat(deltaToken) + "│");
+        
+        console.log("├───────┴────────────────────┴───────────────────┤");
+
+    }
+
+}
+
+
 const main = () => {
 
-    splitFileContent("binary.falak");
+    splitFileContent(fileNames[1]);
     const SIZE = finalWords.length;
 
     tokenization(SIZE);
-    console.log(labeledWords);
+    printData();
 
 }
 
