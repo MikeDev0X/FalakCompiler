@@ -1,1 +1,1 @@
-result = "";
+} while (option == 'Y' || option == 'y');

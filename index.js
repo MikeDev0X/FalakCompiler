@@ -205,15 +205,30 @@ const splitLine = (multiWord) => {
                                 typeOfString = 2;
                                 left = right;
                                 right += 1;
+                                if(labels[multiWord.substring(left, right)] === "DOUBLE-QUOTE"){
+                                    (finalWords.push(multiWord.substring(left, right)) && wordLines.push(lineIndex));
+                                    stringActive = false;
+                                    typeOfString = 2;
+                                    left = right;
+                                    right += 1;
+                                    continue;
+                                }
                             }
                             else if(labels[substring] === "SINGLE-QUOTE"){
                                 stringActive = true;
                                 typeOfString = 1;
                                 left = right;
                                 right += 1;
+                                if(labels[multiWord.substring(left, right)] === "SINGLE-QUOTE"){
+                                    (finalWords.push(multiWord.substring(left, right)) && wordLines.push(lineIndex));
+                                    stringActive = false;
+                                    typeOfString = 2;
+                                    left = right;
+                                    right += 1;
+                                    continue;
+                                }
                             }
                             
-
                             if(!stringActive){
                                 substring = multiWord.substring(left + 1, right + 1);
                                 checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
