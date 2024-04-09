@@ -46,11 +46,21 @@ module.exports.restrictions = [
     "]",
     "{",
     "}",
-    '"',
+    "\"",
+    "\'",
     ";",
     "\n",
     "."
 ]
+
+module.exports.operators = {
+    "=": "ASSIGN",
+    ".": "DOT",
+    "==": "OP-COMP-EQUAL",
+    "<=": "OP-COMP-LESS",
+    ">=": "OP-COMP-GREATER",
+    "!=": "OP-COMP-DIFF",
+}
 
 module.exports.fileNames = [
     "hello.falak",

@@ -1,3 +1,4 @@
+const readline = require('node:readline');
 //global variables
 var finalWords = [];
 var wordLines = [];
@@ -13,6 +14,7 @@ const helpers = require('./dictionaries')
 const labels = helpers.labels;
 const restrictions = helpers.restrictions;
 const fileNames = helpers.fileNames;
+const operators = helpers.operators;
 
 
 
@@ -25,6 +27,8 @@ const splitLine = (multiWord) => {
     let left = 0
     let right = 1
     lineIndex++;
+    let stringActive = false;
+    let typeOfString = 1; //1: single 2:double
 
 
     while (true) {
@@ -68,7 +72,7 @@ const splitLine = (multiWord) => {
                     //not restrictions found with those indexes
                     let substring = ""
 
-                    if (labels[multiWord.substring(left, right + 1)] !== undefined) {
+                    if (!stringActive && labels[multiWord.substring(left, right + 1)] !== undefined) {
                         //word found, stores in splitWords array
 
                         substring = multiWord.substring(left, right + 1);
@@ -88,6 +92,15 @@ const splitLine = (multiWord) => {
                             right += 1;
                             continue;
                         }
+                        else if(operators[multiWord[right]] !== undefined){
+                            substring = multiWord.substring(left, right);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                            finalWords.push(multiWord[right]) && wordLines.push(lineIndex);
+                            left = right + 1;
+                            right += 1;
+                            continue;
+                        }
+
                         else {
                             //move right pointer
                             right += 1;
@@ -204,9 +217,18 @@ const tokenization = (size) => {
 
 }
 
-const splitFileContent = (fileName) => {
+const splitFileContent = (filePath) => {
+
+    let finalFilePath = filePath;
+    if(finalFilePath[0] === "'"){
+        finalFilePath = finalFilePath.substring(1);
+        if(finalFilePath[finalFilePath.length-1] === "'"){
+            finalFilePath = finalFilePath.substring(0,finalFilePath.length-1);
+        }
+    }
+
     let fs = require('fs');
-    const fullContent = fs.readFileSync(`./falak-files/${fileName}`, 'utf-8');
+    const fullContent = fs.readFileSync(finalFilePath, 'utf-8');
 
     fullContent.split(/\r?\n/).forEach(line => {
         const currLine = line;
@@ -243,12 +265,21 @@ const printData = () => {
 
 const main = () => {
 
-    splitFileContent(fileNames[9]);
-    const SIZE = finalWords.length;
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
 
-    tokenization(SIZE);
-    printData();
+    rl.question(`Type the .falak file path: `, filePath => {
+        splitFileContent(filePath);
 
+        const SIZE = finalWords.length;
+
+        tokenization(SIZE);
+        printData();
+
+        rl.close();
+    });
 }
 
 main();
