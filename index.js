@@ -112,8 +112,8 @@ const splitLine = (multiWord) => {
                 }
                 else {
                     let substring = ""
+                    console.log(multiWord[left], multiWord[right])
                     //found a border in one of the pointers
-                    console.log(multiWord[left], multiWord[right]);
                     if (restrictions.includes(multiWord[left]) === true && restrictions.includes(multiWord[right]) === false) {
                         
                         if(!stringActive){
@@ -124,12 +124,10 @@ const splitLine = (multiWord) => {
 
                             left += 1;
                             if(labels[substring] === "DOUBLE-QUOTE"){
-                                console.log("Double-quote started");
                                 stringActive = true;
                                 typeOfString = 2;
                             }
                             else if(labels[substring] === "SINGLE-QUOTE"){
-                                console.log("Single-quote started");
                                 stringActive = true;
                                 typeOfString = 1;
                             }
@@ -138,14 +136,14 @@ const splitLine = (multiWord) => {
                             if(typeOfString === 2 && labels[multiWord[right]] === "DOUBLE-QUOTE"){
                                 stringActive = false;
                                 substring = multiWord.substring(left, left + 1);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
 
                                 left += 1;
                             }
                             else if(typeOfString === 1 && labels[multiWord[right]] === "SINGLE-QUOTE"){
                                 stringActive = false;
                                 substring = multiWord.substring(left, left + 1);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
 
                                 left += 1;
                             }
@@ -165,12 +163,10 @@ const splitLine = (multiWord) => {
                             left = right;
                             right += 1;
                             if(labels[substring] === "DOUBLE-QUOTE"){
-                                console.log("Double-quote started");
                                 stringActive = true;
                                 typeOfString = 2;
                             }
                             else if(labels[substring] === "SINGLE-QUOTE"){
-                                console.log("Single-quote started");
                                 stringActive = true;
                                 typeOfString = 1;
                             }
@@ -179,17 +175,19 @@ const splitLine = (multiWord) => {
                             if(typeOfString === 2 && labels[multiWord[right]] === "DOUBLE-QUOTE"){
                                 stringActive = false;
                                 substring = multiWord.substring(left, right);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(multiWord[right]) && wordLines.push(lineIndex));
 
-                                left = right;
+                                left = right+1;
                                 right += 1;
                             }
                             else if(typeOfString === 1 && labels[multiWord[right]] === "SINGLE-QUOTE"){
                                 stringActive = false;
                                 substring = multiWord.substring(left, right);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(multiWord[right]) && wordLines.push(lineIndex));
 
-                                left = right;
+                                left = right+1;
                                 right += 1;
                             }
                             else{
@@ -203,40 +201,42 @@ const splitLine = (multiWord) => {
                             substring = multiWord.substring(left, right);
                             checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
                             if(labels[substring] === "DOUBLE-QUOTE"){
-                                console.log("Double-quote started");
                                 stringActive = true;
                                 typeOfString = 2;
+                                left = right;
+                                right += 1;
                             }
                             else if(labels[substring] === "SINGLE-QUOTE"){
-                                console.log("Single-quote started");
                                 stringActive = true;
                                 typeOfString = 1;
+                                left = right;
+                                right += 1;
                             }
-                            substring = multiWord.substring(left + 1, right + 1);
-                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
-                            if(labels[substring] === "DOUBLE-QUOTE"){
-                                console.log("Double-quote started");
-                                stringActive = true;
-                                typeOfString = 2;
-                            }
-                            else if(labels[substring] === "SINGLE-QUOTE"){
-                                console.log("Single-quote started");
-                                stringActive = true;
-                                typeOfString = 1;
+                            
+
+                            if(!stringActive){
+                                substring = multiWord.substring(left + 1, right + 1);
+                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                if(labels[substring] === "DOUBLE-QUOTE"){
+                                    stringActive = true;
+                                    typeOfString = 2;
+                                }
+                                else if(labels[substring] === "SINGLE-QUOTE"){
+                                    stringActive = true;
+                                    typeOfString = 1;
+                                }
+                                left = right + 1;
+                                right += 1;
                             }
 
-                            left = right + 1;
-                            right += 1;
+                            
                         }
                         else{
                             if(typeOfString === 2 && labels[multiWord[right]] === "DOUBLE-QUOTE"){
                                 stringActive = false;
                                 substring = multiWord.substring(left, right);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
-                                
-
-                                substring = multiWord.substring(left + 1, right + 1);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                finalWords.push(multiWord[right]) && wordLines.push(lineIndex)
 
                                 left = right + 1;
                                 right += 1;
@@ -244,11 +244,8 @@ const splitLine = (multiWord) => {
                             else if(typeOfString === 1 && labels[multiWord[right]] === "SINGLE-QUOTE"){
                                 stringActive = false;
                                 substring = multiWord.substring(left, right);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
-
-                                substring = multiWord.substring(left + 1, right + 1);
-                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
-
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                finalWords.push(multiWord[right]) && wordLines.push(lineIndex)
 
                                 left = right + 1;
                                 right += 1;
@@ -367,11 +364,14 @@ const printData = () => {
     let deltaToken = 0;
 
     for (let p = 0; p < finalWords.length; p++) {
-        deltaLine = 4 - wordLines[p].toString().length;
-        deltaWord = 14 - finalWords[p].length;
-        deltaToken = 16 - labeledWords[p].length;
 
-        console.log("│   " + wordLines[p] + " ".repeat(deltaLine) + "│      " + finalWords[p] + " ".repeat(deltaWord) + "│   " + labeledWords[p] + " ".repeat(deltaToken) + "│");
+        deltaLine = 4 - wordLines[p].toString().length;
+        let word = finalWords[p].length > 14 ? finalWords[p].substring(0,13): finalWords[p];
+        deltaWord = 14 - word.length;
+        let token = labeledWords[p].length > 16 ? labeledWords[p].substring(0,15): labeledWords[p];
+        deltaToken = 16 - token.length;
+
+        console.log("│   " + wordLines[p] + " ".repeat(deltaLine) + "│      " + word + " ".repeat(deltaWord) + "│   " + token + " ".repeat(deltaToken) + "│");
         
         console.log("├───────┴────────────────────┴───────────────────┤");
 
