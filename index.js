@@ -73,7 +73,7 @@ const splitLine = (multiWord) => {
                     //not restrictions found with those indexes
                     if(multiWord[left] === " "){
                         left +=1;
-                        right = left +1;
+                        right = left;
                     }
                     let substring = ""
 
