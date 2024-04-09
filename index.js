@@ -68,9 +68,13 @@ const splitLine = (multiWord) => {
 
             if (!commentIsActive) {
 
-
+                
                 if (!stringActive && restrictions.includes(multiWord[left]) === false && restrictions.includes(multiWord[right]) === false) {
                     //not restrictions found with those indexes
+                    if(multiWord[left] === " "){
+                        left +=1;
+                        right = left +1;
+                    }
                     let substring = ""
 
                     if (labels[multiWord.substring(left, right + 1)] !== undefined) {
@@ -112,7 +116,6 @@ const splitLine = (multiWord) => {
                 }
                 else {
                     let substring = ""
-                    console.log(multiWord[left], multiWord[right])
                     //found a border in one of the pointers
                     if (restrictions.includes(multiWord[left]) === true && restrictions.includes(multiWord[right]) === false) {
                         

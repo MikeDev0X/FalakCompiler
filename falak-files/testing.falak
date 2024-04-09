@@ -1,1 +1,1 @@
-} while (option == 'Y' || option == 'y');
+    if (num <= 0) {

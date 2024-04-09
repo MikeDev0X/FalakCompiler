@@ -33,6 +33,7 @@ module.exports.labels = {
     "-": "OP-MINUS",
     "+": "OP-PLUS",
     "%": "OP-MODULUS",
+    "/": "OP-DIVISION",
     "==": "OP-COMP-EQUAL",
     "<": "OP-COMP-LESS",
     ">": "OP-COMP-GREATER",
@@ -41,6 +42,7 @@ module.exports.labels = {
     "!=": "OP-COMP-DIFF",
     "=": "ASSIGN",
     "prints": "KW-PRINTS",
+    "println": "KW-PRINTLN",
     "true": "LIT-BOOL",
     "false": "LIT-BOOL"
 };
