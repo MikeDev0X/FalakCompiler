@@ -1,3 +1,4 @@
+const readline = require('node:readline');
 //global variables
 var finalWords = [];
 var wordLines = [];
@@ -9,10 +10,12 @@ var singleCommentTrigger = false;
 var lineIndex = 0;
 
 
-const helpers = require('./dictionaries')
+const helpers = require('./dictionaries');
+const { type } = require('node:os');
 const labels = helpers.labels;
 const restrictions = helpers.restrictions;
 const fileNames = helpers.fileNames;
+const operators = helpers.operators;
 
 
 
@@ -25,6 +28,8 @@ const splitLine = (multiWord) => {
     let left = 0
     let right = 1
     lineIndex++;
+    let stringActive = false;
+    let typeOfString = 1; //1: single 2:double
 
 
     while (true) {
@@ -63,9 +68,13 @@ const splitLine = (multiWord) => {
 
             if (!commentIsActive) {
 
-
-                if (restrictions.includes(multiWord[left]) === false && restrictions.includes(multiWord[right]) === false) {
+                
+                if (!stringActive && restrictions.includes(multiWord[left]) === false && restrictions.includes(multiWord[right]) === false) {
                     //not restrictions found with those indexes
+                    if(multiWord[left] === " "){
+                        left +=1;
+                        right = left;
+                    }
                     let substring = ""
 
                     if (labels[multiWord.substring(left, right + 1)] !== undefined) {
@@ -88,6 +97,15 @@ const splitLine = (multiWord) => {
                             right += 1;
                             continue;
                         }
+                        else if(operators[multiWord[right]] !== undefined){
+                            substring = multiWord.substring(left, right);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                            finalWords.push(multiWord[right]) && wordLines.push(lineIndex);
+                            left = right + 1;
+                            right += 1;
+                            continue;
+                        }
+
                         else {
                             //move right pointer
                             right += 1;
@@ -100,37 +118,164 @@ const splitLine = (multiWord) => {
                     let substring = ""
                     //found a border in one of the pointers
                     if (restrictions.includes(multiWord[left]) === true && restrictions.includes(multiWord[right]) === false) {
-                        //found border on the left pointer
+                        
+                        if(!stringActive){
+                            //found border on the left pointer
+                            //pushes word and border
+                            substring = multiWord.substring(left, left + 1);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
-                        //pushes word and border
-                        substring = multiWord.substring(left, left + 1);
-                        checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                            left += 1;
+                            if(labels[substring] === "DOUBLE-QUOTE"){
+                                stringActive = true;
+                                typeOfString = 2;
+                            }
+                            else if(labels[substring] === "SINGLE-QUOTE"){
+                                stringActive = true;
+                                typeOfString = 1;
+                            }
+                        }
+                        else{
+                            if(typeOfString === 2 && labels[multiWord[right]] === "DOUBLE-QUOTE"){
+                                stringActive = false;
+                                substring = multiWord.substring(left, left + 1);
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
 
-                        left += 1;
+                                left += 1;
+                            }
+                            else if(typeOfString === 1 && labels[multiWord[right]] === "SINGLE-QUOTE"){
+                                stringActive = false;
+                                substring = multiWord.substring(left, left + 1);
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+
+                                left += 1;
+                            }
+                            else{
+                                right +=1;
+                            }
+                        }
                     }
                     else if (restrictions.includes(multiWord[left]) === false && restrictions.includes(multiWord[right]) === true) {
-                        //found border on the right pointer
+                        
+                        if(!stringActive){
+                            //found border on the right pointer
+                            //pushes word and border
+                            substring = multiWord.substring(left, right);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
 
-                        //pushes word and border
-                        substring = multiWord.substring(left, right);
-                        checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                            left = right;
+                            right += 1;
+                            if(labels[substring] === "DOUBLE-QUOTE"){
+                                stringActive = true;
+                                typeOfString = 2;
+                            }
+                            else if(labels[substring] === "SINGLE-QUOTE"){
+                                stringActive = true;
+                                typeOfString = 1;
+                            }
+                        }
+                        else{
+                            if(typeOfString === 2 && labels[multiWord[right]] === "DOUBLE-QUOTE"){
+                                stringActive = false;
+                                substring = multiWord.substring(left, right);
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(multiWord[right]) && wordLines.push(lineIndex));
 
-                        left = right;
-                        right += 1;
+                                left = right+1;
+                                right += 1;
+                            }
+                            else if(typeOfString === 1 && labels[multiWord[right]] === "SINGLE-QUOTE"){
+                                stringActive = false;
+                                substring = multiWord.substring(left, right);
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                (finalWords.push(multiWord[right]) && wordLines.push(lineIndex));
+
+                                left = right+1;
+                                right += 1;
+                            }
+                            else{
+                                right +=1;
+                            }
+                        }
                     }
                     else if (restrictions.includes(multiWord[left]) === true && restrictions.includes(multiWord[right]) === true) {
+                        
+                        if(!stringActive){
+                            substring = multiWord.substring(left, right);
+                            checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                            if(labels[substring] === "DOUBLE-QUOTE"){
+                                stringActive = true;
+                                typeOfString = 2;
+                                left = right;
+                                right += 1;
+                                if(labels[multiWord.substring(left, right)] === "DOUBLE-QUOTE"){
+                                    (finalWords.push(multiWord.substring(left, right)) && wordLines.push(lineIndex));
+                                    stringActive = false;
+                                    typeOfString = 2;
+                                    left = right;
+                                    right += 1;
+                                    continue;
+                                }
+                            }
+                            else if(labels[substring] === "SINGLE-QUOTE"){
+                                stringActive = true;
+                                typeOfString = 1;
+                                left = right;
+                                right += 1;
+                                if(labels[multiWord.substring(left, right)] === "SINGLE-QUOTE"){
+                                    (finalWords.push(multiWord.substring(left, right)) && wordLines.push(lineIndex));
+                                    stringActive = false;
+                                    typeOfString = 2;
+                                    left = right;
+                                    right += 1;
+                                    continue;
+                                }
+                            }
+                            
+                            if(!stringActive){
+                                substring = multiWord.substring(left + 1, right + 1);
+                                checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                if(labels[substring] === "DOUBLE-QUOTE"){
+                                    stringActive = true;
+                                    typeOfString = 2;
+                                }
+                                else if(labels[substring] === "SINGLE-QUOTE"){
+                                    stringActive = true;
+                                    typeOfString = 1;
+                                }
+                                left = right + 1;
+                                right += 1;
+                            }
 
-                        substring = multiWord.substring(left, right);
-                        checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                            
+                        }
+                        else{
+                            if(typeOfString === 2 && labels[multiWord[right]] === "DOUBLE-QUOTE"){
+                                stringActive = false;
+                                substring = multiWord.substring(left, right);
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                finalWords.push(multiWord[right]) && wordLines.push(lineIndex)
 
-                        substring = multiWord.substring(left + 1, right + 1);
-                        checkForSpaces(substring) && (finalWords.push(substring) && wordLines.push(lineIndex));
+                                left = right + 1;
+                                right += 1;
+                            }
+                            else if(typeOfString === 1 && labels[multiWord[right]] === "SINGLE-QUOTE"){
+                                stringActive = false;
+                                substring = multiWord.substring(left, right);
+                                (finalWords.push(substring) && wordLines.push(lineIndex));
+                                finalWords.push(multiWord[right]) && wordLines.push(lineIndex)
 
-
-                        left = right + 1;
+                                left = right + 1;
+                                right += 1;
+                            }
+                            else{
+                                right +=1;
+                            }
+                        }
+                    }
+                    else{
                         right += 1;
                     }
-
                 }
 
             }
@@ -204,9 +349,18 @@ const tokenization = (size) => {
 
 }
 
-const splitFileContent = (fileName) => {
+const splitFileContent = (filePath) => {
+
+    let finalFilePath = filePath;
+    if(finalFilePath[0] === "'"){
+        finalFilePath = finalFilePath.substring(1);
+        if(finalFilePath[finalFilePath.length-1] === "'"){
+            finalFilePath = finalFilePath.substring(0,finalFilePath.length-1);
+        }
+    }
+
     let fs = require('fs');
-    const fullContent = fs.readFileSync(`./falak-files/${fileName}`, 'utf-8');
+    const fullContent = fs.readFileSync(finalFilePath, 'utf-8');
 
     fullContent.split(/\r?\n/).forEach(line => {
         const currLine = line;
@@ -228,11 +382,14 @@ const printData = () => {
     let deltaToken = 0;
 
     for (let p = 0; p < finalWords.length; p++) {
-        deltaLine = 4 - wordLines[p].toString().length;
-        deltaWord = 14 - finalWords[p].length;
-        deltaToken = 16 - labeledWords[p].length;
 
-        console.log("│   " + wordLines[p] + " ".repeat(deltaLine) + "│      " + finalWords[p] + " ".repeat(deltaWord) + "│   " + labeledWords[p] + " ".repeat(deltaToken) + "│");
+        deltaLine = 4 - wordLines[p].toString().length;
+        let word = finalWords[p].length > 14 ? finalWords[p].substring(0,13): finalWords[p];
+        deltaWord = 14 - word.length;
+        let token = labeledWords[p].length > 16 ? labeledWords[p].substring(0,15): labeledWords[p];
+        deltaToken = 16 - token.length;
+
+        console.log("│   " + wordLines[p] + " ".repeat(deltaLine) + "│      " + word + " ".repeat(deltaWord) + "│   " + token + " ".repeat(deltaToken) + "│");
         
         console.log("├───────┴────────────────────┴───────────────────┤");
 
@@ -243,12 +400,21 @@ const printData = () => {
 
 const main = () => {
 
-    splitFileContent(fileNames[9]);
-    const SIZE = finalWords.length;
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
 
-    tokenization(SIZE);
-    printData();
+    rl.question(`Type the .falak file path: `, filePath => {
+        splitFileContent(filePath);
 
+        const SIZE = finalWords.length;
+
+        tokenization(SIZE);
+        printData();
+
+        rl.close();
+    });
 }
 
 main();

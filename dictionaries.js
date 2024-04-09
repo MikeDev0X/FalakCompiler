@@ -11,6 +11,8 @@ module.exports.labels = {
     "true": "KW-TRUE",
     "var": "KW-VAR",
     "while": "KW-WHILE",
+    "||": "OP-OR",
+    "&&": "OP-AND",
     ",": "COMA",
     "(": "OP-PARENTESIS",
     ")": "CL-PARENTESIS",
@@ -28,12 +30,19 @@ module.exports.labels = {
     "\"": "DOUBLE-QUOTE",
     "∖uhhhhhh": "UNICODE-CHARACTER",
     ".": "DOT",
+    "-": "OP-MINUS",
+    "+": "OP-PLUS",
+    "%": "OP-MODULUS",
+    "/": "OP-DIVISION",
     "==": "OP-COMP-EQUAL",
-    "<=": "OP-COMP-LESS",
-    ">=": "OP-COMP-GREATER",
+    "<": "OP-COMP-LESS",
+    ">": "OP-COMP-GREATER",
+    "<=": "OP-COMP-LESS-EQUAL",
+    ">=": "OP-COMP-GREATER-EQUAL",
     "!=": "OP-COMP-DIFF",
     "=": "ASSIGN",
     "prints": "KW-PRINTS",
+    "println": "KW-PRINTLN",
     "true": "LIT-BOOL",
     "false": "LIT-BOOL"
 };
@@ -46,11 +55,21 @@ module.exports.restrictions = [
     "]",
     "{",
     "}",
-    '"',
+    "\"",
+    "\'",
     ";",
     "\n",
     "."
 ]
+
+module.exports.operators = {
+    "=": "ASSIGN",
+    ".": "DOT",
+    "==": "OP-COMP-EQUAL",
+    "<=": "OP-COMP-LESS",
+    ">=": "OP-COMP-GREATER",
+    "!=": "OP-COMP-DIFF",
+}
 
 module.exports.fileNames = [
     "hello.falak",
