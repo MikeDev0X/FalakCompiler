@@ -352,9 +352,9 @@ const tokenization = (size) => {
 const splitFileContent = (filePath) => {
 
     let finalFilePath = filePath;
-    if(finalFilePath[0] === "'"){
+    if(finalFilePath[0] === "'" || finalFilePath[0] === '"'){
         finalFilePath = finalFilePath.substring(1);
-        if(finalFilePath[finalFilePath.length-1] === "'"){
+        if(finalFilePath[finalFilePath.length-1] === "'" || finalFilePath[finalFilePath.length-1] === '"'){
             finalFilePath = finalFilePath.substring(0,finalFilePath.length-1);
         }
     }
